@@ -3,7 +3,7 @@ export const translations = {
     // Landing Page
     'landing.title': 'Modern Queue Management',
     'landing.subtitle': 'Made Simple',
-    'landing.description': 'Streamline your salon or barber shop with real-time queue management, online booking, and automated customer notifications.',
+    'landing.description': 'Streamline your business with real-time queue management, online booking, and automated customer notifications.',
     'landing.bookAppointment': 'Book Appointment',
     'landing.joinQueue': 'Join Queue',
     'landing.features': 'Everything You Need',
@@ -28,7 +28,7 @@ export const translations = {
     'queue.noServing': 'No one is currently being served',
 
     // Customer
-    'customer.welcome': 'Welcome to Style & Cut Salon',
+    'customer.welcome': 'Welcome',
     'customer.welcomeDesc': 'Book an appointment or join our walk-in queue',
     'customer.bookTitle': 'Book Appointment',
     'customer.bookDesc': 'Schedule your visit in advance',
@@ -45,7 +45,7 @@ export const translations = {
     'customer.called': 'Called',
     'customer.serving': 'Serving',
     'customer.chooseTimeSlot': 'Choose your preferred time slot',
-    'customer.selectStylist': 'Select your favorite stylist',
+    'customer.selectStylist': 'Select your preferred staff member',
     'customer.getConfirmation': 'Get confirmation and reminders',
     'customer.bookNow': 'Book Now',
     'customer.noAppointment': 'No appointment needed',
@@ -59,7 +59,7 @@ export const translations = {
     // Booking
     'booking.selectService': 'Select a Service',
     'booking.chooseService': 'Choose what you\'d like to have done',
-    'booking.selectStaff': 'Choose Your Stylist',
+    'booking.selectStaff': 'Choose Your Provider',
     'booking.selectDateTime': 'Pick Date & Time',
     'booking.yourDetails': 'Your Details',
     'booking.confirmed': 'Appointment Confirmed!',
@@ -155,7 +155,7 @@ export const translations = {
     'queue.noServing': 'אין כרגע מי שמקבל שירות',
 
     // Customer
-    'customer.welcome': 'ברוכים הבאים לסטייל & קאט',
+    'customer.welcome': 'ברוכים הבאים',
     'customer.welcomeDesc': 'קבע תור או הצטרף לתור הממתינים',
     'customer.bookTitle': 'קביעת תור',
     'customer.bookDesc': 'תזמן את הביקור שלך מראש',
@@ -172,7 +172,7 @@ export const translations = {
     'customer.called': 'נקרא',
     'customer.serving': 'בשירות',
     'customer.chooseTimeSlot': 'בחר את משבצת הזמן המועדפת עליך',
-    'customer.selectStylist': 'בחר את המעצב האהוב עליך',
+    'customer.selectStylist': 'בחר את חבר הצוות המועדף עליך',
     'customer.getConfirmation': 'קבל אישור ותזכורות',
     'customer.bookNow': 'קבע עכשיו',
     'customer.noAppointment': 'אין צורך בתור מראש',
@@ -186,7 +186,7 @@ export const translations = {
     // Booking
     'booking.selectService': 'בחר שירות',
     'booking.chooseService': 'בחר מה תרצה לעשות',
-    'booking.selectStaff': 'בחר מעצב שיער',
+    'booking.selectStaff': 'בחר ספק שירות',
     'booking.selectDateTime': 'בחר תאריך ושעה',
     'booking.yourDetails': 'הפרטים שלך',
     'booking.confirmed': 'התור אושר!',
@@ -266,7 +266,7 @@ export const translations = {
     'booking.anyRequests': 'בקשות או הערות מיוחדות',
     'booking.appointmentDetails': 'פרטי התור שלך',
     'booking.service': 'שירות',
-    'booking.stylist': 'מעצב שיער',
+    'booking.stylist': 'ספק שירות',
     'booking.duration': 'משך',
     'booking.total': 'סה"כ',
     'booking.booking': 'מזמין...',
