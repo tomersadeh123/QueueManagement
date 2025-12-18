@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Salon Queue Management System
+
+A modern, simple customer queue management system for beauty salons and barber shops.
+
+## Features
+
+- 📅 **Appointment Booking** - Customers can book appointments online
+- 🎫 **Walk-in Queue** - Real-time queue management for walk-in customers
+- 📱 **Customer Notifications** - SMS/Email notifications when turn is approaching
+- 👨‍💼 **Staff Dashboard** - Manage appointments, queue, and services
+- ⚡ **Real-time Updates** - Live queue status updates
+- 🎨 **Modern UI** - Clean, responsive interface built with Next.js and Tailwind CSS
+
+## Tech Stack
+
+- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS + Shadcn/ui
+- **Backend**: Supabase (PostgreSQL + Real-time + Auth)
+- **Notifications**: Twilio (optional)
+- **Deployment**: Vercel + Supabase
 
 ## Getting Started
 
-First, run the development server:
+### 1. Set up Supabase
+
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Once created, go to **Project Settings** → **API**
+3. Copy your `Project URL` and `anon/public` key
+
+### 2. Run the database migration
+
+1. In Supabase dashboard, go to **SQL Editor**
+2. Create a new query
+3. Copy the contents of `supabase/migrations/20231217_initial_schema.sql`
+4. Paste and run the SQL
+5. Verify tables were created in the **Table Editor**
+
+### 3. Configure environment variables
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Copy the example file
+cp .env.local.example .env.local
+
+# Edit .env.local and add your Supabase credentials
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. Install dependencies and run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+salon-queue-app/
+├── src/
+│   ├── app/
+│   │   ├── admin/          # Admin dashboard pages
+│   │   ├── customer/       # Customer-facing pages (booking)
+│   │   ├── queue-display/  # Public queue display screen
+│   │   └── page.tsx        # Landing page
+│   ├── components/
+│   │   └── ui/             # Shadcn UI components
+│   ├── lib/
+│   │   └── supabase/       # Supabase client utilities
+│   ├── types/              # TypeScript type definitions
+│   └── hooks/              # Custom React hooks
+└── supabase/
+    └── migrations/         # Database schema migrations
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database Schema
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **businesses** - Salon/shop information
+- **staff** - Staff members and their availability
+- **services** - Services offered (haircut, styling, etc.)
+- **appointments** - Scheduled appointments
+- **queue_entries** - Walk-in queue entries
 
-## Deploy on Vercel
+## Next Steps
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Create seed data (sample business, staff, services)
+2. Build the customer booking interface
+3. Build the admin dashboard
+4. Implement real-time queue updates
+5. Add SMS notifications with Twilio
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Development
+
+```bash
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Run production server
+npm start
+```
+
+## License
+
+MIT
