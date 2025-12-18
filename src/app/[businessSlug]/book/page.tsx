@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,9 +11,17 @@ import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { Calendar as CalendarIcon, Clock, CheckCircle, ArrowLeft, User } from 'lucide-react';
 import Link from 'next/link';
-import { format, addDays, setHours, setMinutes } from 'date-fns';
+import { format, setHours, setMinutes } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+
+type Business = {
+  id: string;
+  name: string;
+  slug: string;
+  phone: string;
+  address: string;
+};
 
 type Service = {
   id: string;
@@ -28,7 +37,12 @@ type Staff = {
 };
 
 export default function BookAppointmentPage() {
+  const params = useParams();
+  const router = useRouter();
   const { t, isRTL } = useLanguage();
+  const businessSlug = params.businessSlug as string;
+
+  const [business, setBusiness] = useState<Business | null>(null);
   const [step, setStep] = useState(1);
   const [services, setServices] = useState<Service[]>([]);
   const [staff, setStaff] = useState<Staff[]>([]);
@@ -43,15 +57,19 @@ export default function BookAppointmentPage() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [booked, setBooked] = useState(false);
-  const [businessId, setBusinessId] = useState('');
 
   const supabase = createClient();
 
   useEffect(() => {
-    fetchServices();
-    fetchStaff();
     fetchBusiness();
-  }, []);
+  }, [businessSlug]);
+
+  useEffect(() => {
+    if (business) {
+      fetchServices();
+      fetchStaff();
+    }
+  }, [business]);
 
   // Update available time slots when date or staff changes
   useEffect(() => {
@@ -61,23 +79,40 @@ export default function BookAppointmentPage() {
   }, [selectedDate, selectedStaff]);
 
   const fetchBusiness = async () => {
-    const { data } = await supabase.from('businesses').select('id').single();
-    if (data) setBusinessId(data.id);
+    const { data, error } = await supabase
+      .from('businesses')
+      .select('*')
+      .eq('slug', businessSlug)
+      .single();
+
+    if (error || !data) {
+      console.error('Business not found:', error);
+      router.push('/');
+      return;
+    }
+
+    setBusiness(data);
   };
 
   const fetchServices = async () => {
+    if (!business) return;
+
     const { data } = await supabase
       .from('services')
       .select('*')
+      .eq('business_id', business.id)
       .eq('is_active', true)
       .order('name');
     if (data) setServices(data);
   };
 
   const fetchStaff = async () => {
+    if (!business) return;
+
     const { data } = await supabase
       .from('staff')
       .select('id, name')
+      .eq('business_id', business.id)
       .eq('is_active', true)
       .order('name');
     if (data) setStaff(data);
@@ -117,7 +152,7 @@ export default function BookAppointmentPage() {
   };
 
   const handleBooking = async () => {
-    if (!selectedService || !selectedStaff || !selectedDate || !selectedTime || !customerName || !customerPhone || !customerEmail || !businessId) {
+    if (!selectedService || !selectedStaff || !selectedDate || !selectedTime || !customerName || !customerPhone || !customerEmail || !business) {
       alert('Please fill in all fields');
       return;
     }
@@ -131,7 +166,7 @@ export default function BookAppointmentPage() {
       const { data: appointmentData, error } = await supabase
         .from('appointments')
         .insert({
-          business_id: businessId,
+          business_id: business.id,
           customer_name: customerName,
           customer_phone: customerPhone,
           customer_email: customerEmail,
@@ -172,13 +207,21 @@ export default function BookAppointmentPage() {
     }
   };
 
+  if (!business) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">{t('common.loading')}</div>
+      </div>
+    );
+  }
+
   if (booked) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir={isRTL ? 'rtl' : 'ltr'}>
         <header className="border-b bg-white/80 backdrop-blur-sm">
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/customer" className="text-xl font-bold text-slate-900">
-              Queue Manager
+            <Link href={`/${businessSlug}`} className="text-xl font-bold text-slate-900">
+              {business.name}
             </Link>
             <LanguageSwitcher />
           </div>
@@ -267,7 +310,7 @@ export default function BookAppointmentPage() {
                   </ul>
                 </div>
 
-                <Link href="/customer">
+                <Link href={`/${businessSlug}`}>
                   <Button className="w-full" size="lg">
                     {t('common.done')}
                   </Button>
@@ -285,7 +328,7 @@ export default function BookAppointmentPage() {
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/customer">
+            <Link href={`/${businessSlug}`}>
               <Button variant="ghost" size="icon">
                 <ArrowLeft className="w-5 h-5" />
               </Button>

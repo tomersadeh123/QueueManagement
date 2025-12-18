@@ -27,8 +27,26 @@ export default function BusinessesManagementPage() {
 
   // Form fields
   const [name, setName] = useState('');
+  const [slug, setSlug] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
+
+  // Auto-generate slug from name
+  const generateSlug = (businessName: string) => {
+    return businessName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .trim();
+  };
+
+  const handleNameChange = (value: string) => {
+    setName(value);
+    if (!slug) {
+      setSlug(generateSlug(value));
+    }
+  };
 
   const supabase = createClient();
 
@@ -61,6 +79,7 @@ export default function BusinessesManagementPage() {
         .from('businesses')
         .insert({
           name,
+          slug,
           phone,
           address: address || null,
         })
@@ -76,6 +95,7 @@ export default function BusinessesManagementPage() {
 
       // Reset form
       setName('');
+      setSlug('');
       setPhone('');
       setAddress('');
       setShowForm(false);
@@ -144,10 +164,28 @@ export default function BusinessesManagementPage() {
                   type="text"
                   placeholder={isRTL ? 'לדוגמה: סלון יופי דנה' : 'e.g., Dana Beauty Salon'}
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => handleNameChange(e.target.value)}
                   required
                   disabled={formLoading}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="business-slug">{isRTL ? 'כתובת URL ייחודית' : 'Unique URL'}</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-slate-500">yourdomain.com/</span>
+                  <Input
+                    id="business-slug"
+                    type="text"
+                    placeholder="dana-salon"
+                    value={slug}
+                    onChange={(e) => setSlug(generateSlug(e.target.value))}
+                    required
+                    disabled={formLoading}
+                  />
+                </div>
+                <p className="text-xs text-slate-500">
+                  {isRTL ? 'כתובת ייחודית לעסק (רק אותיות באנגלית, מספרים ומקפים)' : 'Unique URL for this business (lowercase, numbers, and hyphens only)'}
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="business-phone">{isRTL ? 'טלפון' : 'Phone'}</Label>

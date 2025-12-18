@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Users, Calendar, Settings, Home, LogOut, Building2, Shield } from 'lucide-react';
+import { LayoutDashboard, Users, Calendar, Settings, Home, LogOut, Building2, Shield, Scissors } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { createClient } from '@/lib/supabase/client';
@@ -106,6 +106,24 @@ export default function AdminLayout({
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
                     {t('admin.appointments')}
+                  </div>
+                </Link>
+                <Link
+                  href="/admin/services"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Scissors className="w-4 h-4" />
+                    {isRTL ? 'שירותים' : 'Services'}
+                  </div>
+                </Link>
+                <Link
+                  href="/admin/staff"
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    {isRTL ? 'צוות' : 'Staff'}
                   </div>
                 </Link>
                 <Link

@@ -1,28 +1,75 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, Users, Clock, ArrowRight, FileText } from 'lucide-react';
+import { Calendar, Users, FileText, ArrowRight, MapPin, Phone } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { createClient } from '@/lib/supabase/client';
 
-export default function CustomerHome() {
+type Business = {
+  id: string;
+  name: string;
+  slug: string;
+  phone: string;
+  address: string;
+};
+
+export default function BusinessLandingPage() {
+  const params = useParams();
+  const router = useRouter();
   const { t, isRTL } = useLanguage();
+  const [business, setBusiness] = useState<Business | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const businessSlug = params.businessSlug as string;
+  const supabase = createClient();
+
+  useEffect(() => {
+    fetchBusiness();
+  }, [businessSlug]);
+
+  const fetchBusiness = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('businesses')
+      .select('*')
+      .eq('slug', businessSlug)
+      .single();
+
+    if (error || !data) {
+      console.error('Business not found:', error);
+      router.push('/');
+      return;
+    }
+
+    setBusiness(data);
+    setLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">{t('common.loading')}</div>
+      </div>
+    );
+  }
+
+  if (!business) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold text-slate-900">
-            Queue Manager
-          </Link>
+          <h1 className="text-xl font-bold text-slate-900">{business.name}</h1>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
-            <Link href="/">
-              <Button variant="ghost">{t('common.home')}</Button>
-            </Link>
           </div>
         </div>
       </header>
@@ -30,19 +77,35 @@ export default function CustomerHome() {
       <div className="container mx-auto px-4 py-16">
         {/* Hero */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">
-            {t('customer.welcome')}
-          </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            {t('customer.welcomeDesc')}
+          <h2 className="text-4xl font-bold text-slate-900 mb-4">
+            {isRTL ? `ברוכים הבאים ל${business.name}` : `Welcome to ${business.name}`}
+          </h2>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-6">
+            {isRTL ? 'בחר את הדרך המועדפת עליך לקבוע תור' : 'Choose your preferred way to book'}
           </p>
+
+          {/* Business Info */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-slate-600">
+            {business.phone && (
+              <div className="flex items-center gap-2">
+                <Phone className="w-4 h-4" />
+                <span>{business.phone}</span>
+              </div>
+            )}
+            {business.address && (
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span>{business.address}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Options */}
         <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {/* Book Appointment */}
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/customer/book">
+            <Link href={`/${businessSlug}/book`}>
               <CardHeader>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
                   <Calendar className="w-6 h-6 text-blue-600" />
@@ -77,7 +140,7 @@ export default function CustomerHome() {
 
           {/* Join Queue */}
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/customer/queue">
+            <Link href={`/${businessSlug}/queue`}>
               <CardHeader>
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-green-600" />
@@ -112,7 +175,7 @@ export default function CustomerHome() {
 
           {/* My Appointments */}
           <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href="/customer/my-appointments">
+            <Link href={`/${businessSlug}/my-appointments`}>
               <CardHeader>
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                   <FileText className="w-6 h-6 text-purple-600" />
@@ -143,34 +206,6 @@ export default function CustomerHome() {
                 </Button>
               </CardContent>
             </Link>
-          </Card>
-        </div>
-
-        {/* Info */}
-        <div className="mt-12 max-w-2xl mx-auto">
-          <Card className="bg-slate-50 border-slate-200">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-slate-600" />
-                <CardTitle>{t('common.businessHours')}</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="font-medium text-slate-900">{t('customer.sundayThursday')}</p>
-                  <p className="text-slate-600">9:00 AM - 7:00 PM</p>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-900">{t('customer.friday')}</p>
-                  <p className="text-slate-600">9:00 AM - 3:00 PM</p>
-                </div>
-                <div>
-                  <p className="font-medium text-slate-900">{t('customer.saturday')}</p>
-                  <p className="text-slate-600">{t('customer.closed')}</p>
-                </div>
-              </div>
-            </CardContent>
           </Card>
         </div>
       </div>
