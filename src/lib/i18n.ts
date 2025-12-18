@@ -280,7 +280,6 @@ export const translations = {
     'admin.currentQueue': 'תור נוכחי',
     'admin.todayAppointments': 'תורים של היום',
     'admin.customers': 'לקוחות',
-    'admin.customer': 'לקוח',
     'admin.activeQueue': 'תור פעיל',
     'admin.waitingOrServed': 'ממתינים או מקבלים שירות',
     'admin.noCustomers': 'אין לקוחות בתור',
@@ -330,7 +329,7 @@ export type Language = 'en' | 'he';
 
 export function t(key: string, lang: Language = 'en'): string {
   // Direct lookup since keys are flat strings like 'landing.title'
-  const value = translations[lang][key];
+  const value = (translations[lang] as Record<string, string>)[key];
   return value || key;
 }
 
